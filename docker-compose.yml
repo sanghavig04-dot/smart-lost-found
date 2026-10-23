@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on: [mongo]
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      UPLOAD_DIR: /data/uploads
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads:/data/uploads
+      - keras-cache:/root/.keras   # caches the MobileNetV2 weights between restarts
+
+volumes:
+  mongo-data:
+  uploads:
+  keras-cache:
